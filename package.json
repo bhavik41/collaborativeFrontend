@@ -5,12 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-  "build": "react-scripts build",
-  "start": "react-scripts start",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
-  }
- ,
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
     "@webcontainer/api": "^1.5.1-internal.9",
