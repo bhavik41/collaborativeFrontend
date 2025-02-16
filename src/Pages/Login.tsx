@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import axios from '../config/axios';
-// Ensure this path is correct or update it to the correct path
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../App/store';
 import { validateToken } from '../redux/auth.slice';
@@ -34,7 +33,7 @@ const Login = () => {
 
         axios.post<{ user: User; token: string }>('/users/login', { email, password })
             .then((res) => {
-                const { user, token } = res.data;
+                const { token } = res.data;
 
                 console.log('API Response:', res.data);
 

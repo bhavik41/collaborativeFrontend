@@ -18,7 +18,7 @@ interface ExplorerProps {
     setOpenFiles: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const Explorer: React.FC<ExplorerProps> = ({ fileTree, setFileTree, currentFile, setCurrentFile, openFiles, setOpenFiles }) => {
+const Explorer: React.FC<ExplorerProps> = ({ fileTree, setCurrentFile, openFiles, setOpenFiles }) => {
     return (
         <div className="explorer h-full max-w-64 min-w-52 bg-slate-200">
             <div className="file-tree w-full flex flex-col gap-1">
