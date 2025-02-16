@@ -1,6 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-// import { UserContext } from '../context/user.context';
-import { FilePlus2, User, UserRound } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FilePlus2, UserRound } from 'lucide-react';
 import axios from '../config/axios'
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -14,7 +13,6 @@ interface Project {
 }
 
 const Home = () => {
-    // const { user } = useContext(UserContext);
 
     const { user } = useSelector((state: RootState) => state.auth)
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)

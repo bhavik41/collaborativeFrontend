@@ -1,8 +1,6 @@
-import React from 'react'
 import { Route, BrowserRouter, Routes } from 'react-router-dom'
 import Login from '../Pages/Login'
 import Signup from '../Pages/Signup'
-import Bhavik from '../Pages/bhavik'
 import Home from '../Pages/Home'
 import Project from '../Pages/Project'
 import UserAuth from '../auth/UserAuth'
@@ -14,7 +12,6 @@ const AppRoutes = () => {
         <>
             <BrowserRouter>
                 <Routes>
-                    {/* <Route path="/home" element={<Home />} /> */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />

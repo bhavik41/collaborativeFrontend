@@ -1,12 +1,18 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import axios from '../config/axios';
-import { UserContext, UserContextProps, User } from '../context/user.context'; // Ensure this path is correct or update it to the correct path
+// Ensure this path is correct or update it to the correct path
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../App/store';
 import { validateToken } from '../redux/auth.slice';
+
+interface User {
+    id: string;
+    email: string;
+    name: string;
+}
 
 const Login = () => {
     // const { setUser } = useContext<UserContextProps>(UserContext);
