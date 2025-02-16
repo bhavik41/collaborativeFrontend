@@ -50,7 +50,7 @@ const Project = () => {
     const [isSlidePanelOpen, setIsSlidePanelOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [collaborators, setCollaborators] = useState<User[]>([]);
-    const [project, setProject] = useState<Project>(location.state.project);
+    const project = location.state.project;
     const [allUsers, setAllUsers] = useState<User[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const { user } = useSelector((state: RootState) => state.auth);
