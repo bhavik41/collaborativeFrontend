@@ -23,7 +23,7 @@ const initialState: UserState = {
 // Async thunk to validate JWT
 export const validateToken = createAsyncThunk('http://localhost:3006/user/validateToken', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.get<{ user: User }>('https://collaborativebackend-production.up.railway.app/import { createSlice, createAsyncThunk } from '@reduxjs / toolkit';
+        const response = await axios.get<{ user: User }>('https://collaborativebackend.onrender.com/users/profile', { createSlice, createAsyncThunk } from '@reduxjs / toolkit';
 import axios from 'axios';
 
         interface User {
