@@ -32,7 +32,6 @@ interface Project {
 interface Message {
     sender: string;
     message: string;
-    type: "incoming" | "outgoing";
 }
 
 
@@ -75,7 +74,6 @@ const Project = () => {
                 const incomingMessage: Message = {
                     sender: data.sender,
                     message: data.message,
-                    type: "incoming",
                 };
                 console.log(data.message)
 
