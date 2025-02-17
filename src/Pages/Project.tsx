@@ -136,6 +136,8 @@ const Project = () => {
         }
     };
 
+
+
     return (
         <main className="h-screen w-screen flex">
             <section className="left relative flex flex-col h-full min-w-96 bg-slate-300">

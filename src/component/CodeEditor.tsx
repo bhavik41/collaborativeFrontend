@@ -128,27 +128,34 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
     }
 
+    const truncateFilename = (filename: string, maxLength: number = 20) => {
+        if (filename.length <= maxLength) return filename;
+        const extension = filename.lastIndexOf('.') > 0 ?
+            filename.substring(filename.lastIndexOf('.')) : '';
+        const name = filename.substring(0, filename.lastIndexOf('.') > 0 ?
+            filename.lastIndexOf('.') : filename.length);
+
+        if (name.length <= maxLength - 3 - extension.length) return filename;
+
+        return `${name.substring(0, maxLength - 3 - extension.length)}...${extension}`;
+    };
+
     return (
         <>
 
             <div className="code-editor flex flex-col w-full h-full">
-
-
-
-                {/* File Tabs Header */}
                 <div className="code-editor-header flex gap-1 items-center justify-between w-full bg-gray-200 p-2">
                     <div className="files flex">
-
-
-
                         {openFiles.map((file, index) => (
                             <button
+                                title={file}
                                 key={index}
                                 onClick={() => handleFileClick(file)}
                                 className={`flex items-center gap-2 cursor-pointer border rounded-sm px-2 py-1 ${currentFile === file ? 'bg-blue-600 text-white' : 'bg-gray-300'
                                     } hover:bg-gray-400`}
                             >
-                                <span className="font-semibold">{file}</span>
+                                {/* <span className="font-semibold">{file}</span> */}
+                                <p className="font-semibold">{truncateFilename(file)}</p>
                                 <i
                                     className="ri-close-fill"
                                     onClick={(e) => {
