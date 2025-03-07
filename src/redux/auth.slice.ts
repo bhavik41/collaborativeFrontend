@@ -23,7 +23,7 @@ const initialState: UserState = {
 // Async thunk to validate JWT
 export const validateToken = createAsyncThunk('/user/validateToken', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.get<{ user: User }>('https://collaborativebackend-production.up.railway.app/users/profile', {
+        const response = await axios.get<{ user: User }>('https://collaborativebackend-1.onrender.com/users/profile', {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
