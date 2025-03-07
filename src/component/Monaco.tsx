@@ -531,7 +531,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             // setLogType('server'); // Automatically switch to server logs when ready
             // setActiveTab('preview');
 
-            webContainer.on('server-ready', (url: any) => {
+            webContainer.on('server-ready', (_port, url) => {
                 const message = `✨ Server ready at ${url}`;
                 addLog('install', message);
                 addLog('server', message);
