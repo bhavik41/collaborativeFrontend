@@ -8,10 +8,11 @@ import SlidePanel from "../component/SlidePanel";
 import MessageArea from "../component/MessageArea";
 import CollaboratorModal from "../component/CollaboratorModal";
 
-import CodeEditor from "../component/CodeEditor";
-import { WebContainer, WebContainerProcess } from "@webcontainer/api";
+import CodeEditor from "../component/Monaco";
+import { WebContainer } from "@webcontainer/api";
 import { getWebContainer } from "../config/wbContainer";
 import Explorer from "../component/Explorer";
+
 
 
 interface User {
@@ -22,6 +23,9 @@ interface User {
 interface Project {
     id: string;
     name: string;
+    creator: string;
+    language: string;
+    descriptionn?: string
     users: User[];
     fileTree: FileTree
     version: number;
@@ -33,16 +37,25 @@ interface Message {
     sender: string;
     message: string;
 }
-
-
-interface FileTree {
-    [key: string]: {
-        file: {
-            contents: string;
-            language: string;
-        }
+interface FileContent {
+    file: {
+        contents: string;
+        language?: string;
     };
 }
+
+interface DirectoryContent {
+    directory: {
+        [key: string]: FileNode;
+    };
+}
+
+type FileNode = FileContent | DirectoryContent;
+
+interface FileTree {
+    [key: string]: FileNode;
+}
+
 
 const Project = () => {
     const location = useLocation();
@@ -50,6 +63,7 @@ const Project = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [collaborators, setCollaborators] = useState<User[]>([]);
     const project = location.state.project;
+    // const [project, setProject] = useState<Project>(location.state.project);
     const [allUsers, setAllUsers] = useState<User[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const { user } = useSelector((state: RootState) => state.auth);
@@ -57,8 +71,8 @@ const Project = () => {
     const [currentFile, setCurrentFile] = useState<string | null>(null)
     const [openFiles, setOpenFiles] = useState<string[]>([])
     const [webContainer, setWebContainer] = useState<WebContainer | null>(null)
-    const [iframeUrl, setIframeUrl] = useState<string | null>(null);
-    const [runProcess, setRunProcess] = useState<WebContainerProcess | null>(null);
+    // const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+    // const [runProcess, setRunProcess] = useState<WebContainerProcess | null>(null);
 
     useEffect(() => {
         if (!webContainer) {
@@ -69,7 +83,7 @@ const Project = () => {
         }
 
         initializeSocket(project.id);
-        receiveMessage("project-message", (data: any) => {
+        receiveMessage("project-message", async (data: any) => {
             if (user && data.sender !== user.email) {
                 const incomingMessage: Message = {
                     sender: data.sender,
@@ -85,10 +99,20 @@ const Project = () => {
                     console.log("bhavik")
                     const message = JSON.parse(data.message);
                     console.log(message.fileTree)
-
-                    console.log(message)
                     if (message.fileTree) {
+
                         setFileTree(message.fileTree)
+
+                        try {
+                            const response = await axios.put('/project/update-file-tree', {
+                                projectId: project.id,
+                                fileTree: message.fileTree,
+                            });
+                            console.log('rsponse', response.data);
+                        } catch (err) {
+                            console.error("Error saving file tree:", err);
+
+                        }
                         console.log(fileTree)
                     }
 
@@ -103,6 +127,7 @@ const Project = () => {
             .get<{ project: Project }>(`/project/get-project/${location.state.project.id}`)
             .then(
                 (res) => {
+                    console.log(project)
                     setCollaborators(res.data.project.users);
 
                     setFileTree(res.data.project.fileTree)
@@ -139,7 +164,7 @@ const Project = () => {
 
 
     return (
-        <main className="h-screen w-screen flex">
+        <main className=" w-screen h-screen flex">
             <section className="left relative flex flex-col h-full min-w-96 bg-slate-300">
                 <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100">
                     <button className="flex gap-2" onClick={() => setIsModalOpen(true)}>
@@ -164,16 +189,6 @@ const Project = () => {
             </section>
 
             <section className="right bg-red-50 flex-grow h-full flex">
-                {/* <div className="explorer h-full max-w-64 min-w-52 bg-slate-200">
-                    <div className="file-tree w-full ">
-                        <div className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 bg-slate-300">
-                            <p className='font-semibold text-lg'>
-                                app.js
-                            </p>
-                        </div>
-
-                    </div>
-                </div> */}
                 <Explorer
                     fileTree={fileTree}
                     setFileTree={setFileTree}
@@ -181,6 +196,7 @@ const Project = () => {
                     setCurrentFile={setCurrentFile}
                     openFiles={openFiles}
                     setOpenFiles={setOpenFiles}
+                    project={project}
                 />
                 <CodeEditor
                     fileTree={fileTree}
@@ -190,13 +206,14 @@ const Project = () => {
                     openFiles={openFiles}
                     setOpenFiles={setOpenFiles}
                     webContainer={webContainer}
-                    iframeUrl={iframeUrl}
-                    setIframeUrl={setIframeUrl}
-                    runProcess={runProcess}
-                    setRunProcess={setRunProcess}
                     project={project}
 
                 />
+
+
+
+
+
 
             </section>
 
@@ -215,3 +232,6 @@ const Project = () => {
 };
 
 export default Project;
+
+
+

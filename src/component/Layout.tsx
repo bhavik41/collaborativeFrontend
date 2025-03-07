@@ -19,7 +19,7 @@ const Layout: React.FC = () => {
     };
 
     return (
-        <div className="layout h-screen">
+        <div className="layout flex flex-col h-screen">
             <Navbar onLogout={handleLogout} />
             <div className="content">
                 <Outlet />

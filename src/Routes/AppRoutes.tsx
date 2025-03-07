@@ -5,6 +5,7 @@ import Home from '../Pages/Home'
 import Project from '../Pages/Project'
 import UserAuth from '../auth/UserAuth'
 import Layout from '../component/Layout'
+import ProjectDashboard from '../Pages/dashboard'
 
 
 const AppRoutes = () => {
@@ -19,6 +20,7 @@ const AppRoutes = () => {
                         <Route element={<Layout />}>
                             <Route path="/home" element={<Home />} />
                             <Route path="/project/:id" element={<Project />} />
+                            <Route path="/dashboard" element={<ProjectDashboard />} />
                         </Route>
                     </Route>
                 </Routes>
