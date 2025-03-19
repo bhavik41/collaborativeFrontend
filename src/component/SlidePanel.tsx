@@ -6,8 +6,8 @@ interface SlidePanelProps {
     onClose: () => void;
 }
 
-const SlidePanel: React.FC<SlidePanelProps> = ({ isOpen, collaborators, onClose }) => (
-    <div
+const SlidePanel: React.FC<SlidePanelProps> = ({ isOpen, collaborators, onClose }) => {
+    return <div
         className={`slidepanel w-full h-full flex flex-col gap-2 bg-slate-50 absolute top-0 transition-all ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
     >
         <header className="flex justify-between items-center p-2 px-4 bg-slate-200">
@@ -17,6 +17,7 @@ const SlidePanel: React.FC<SlidePanelProps> = ({ isOpen, collaborators, onClose 
             </button>
         </header>
         <div className="users flex flex-col gap-2">
+
             {collaborators.map((user) => (
                 <div key={user.id} className="user flex gap-2 cursor-pointer items-center hover:bg-slate-200 p-2">
                     <div className="aspect-square rounded-full w-fit h-fit p-4 flex items-center justify-center bg-slate-500 text-white">
@@ -27,6 +28,6 @@ const SlidePanel: React.FC<SlidePanelProps> = ({ isOpen, collaborators, onClose 
             ))}
         </div>
     </div>
-);
+};
 
 export default SlidePanel;

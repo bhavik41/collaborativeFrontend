@@ -465,26 +465,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 return;
             }
 
-            // if (!checkForPackageJson(fileTree)) {
-            //     addLog('install', "⚠️ No package.json found, creating one...");
 
-            //     const mainFile = currentFile || "index.js"; // Set main file dynamically
-
-            //     fileTree["package.json"] = {
-            //         file: {
-            //             contents: JSON.stringify({
-            //                 name: "webcontainer-app",
-            //                 version: "1.0.0",
-            //                 main: mainFile,
-            //                 scripts: {
-            //                     start: `node ${mainFile}`
-            //                 }
-            //             }, null, 2),
-            //         },
-            //     };
-
-            //     addLog('install', `✅ Created package.json with main file: ${mainFile}`);
-            // }
 
             // Install dependencies
             addLog('install', "📦 Installing dependencies...");
@@ -523,13 +504,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     addLog('server', chunk.toString());
                 },
             }));
-            // const url = await webContainer.getServerUrl();
-            // const message = `✨ Server ready at ${url}`;
-            // addLog('install', message);
-            // addLog('server', message);
-            // setIframeUrl(url); // Set iframeUrl with a string value
-            // setLogType('server'); // Automatically switch to server logs when ready
-            // setActiveTab('preview');
 
             webContainer.on('server-ready', (_port, url) => {
                 const message = `✨ Server ready at ${url}`;
@@ -855,32 +829,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         return `${name.substring(0, maxLength - 3 - extension.length)}...${extension}`;
     };
 
-    // const startResizing = (e: React.MouseEvent) => {
-    //     e.preventDefault();
-    //     resizingRef.current = true;
-    //     startXRef.current = e.clientX;
-    //     document.addEventListener('mousemove', handleResize);
-    //     document.addEventListener('mouseup', stopResizing);
-    // };
-
-    // const handleResize = (e: MouseEvent) => {
-    //     if (!resizingRef.current || !containerRef.current) return;
-
-    //     const containerRect = containerRef.current.getBoundingClientRect();
-    //     const newX = e.clientX - containerRect.left;
-    //     const newWidth = (newX / containerRect.width) * 100;
-
-    //     // Limit resize range (10% to 90%)
-    //     if (newWidth >= 10 && newWidth <= 90) {
-    //         setLeftPanelWidth(newWidth);
-    //     }
-    // };
-
-    // const stopResizing = () => {
-    //     resizingRef.current = false;
-    //     document.removeEventListener('mousemove', handleResize);
-    //     document.removeEventListener('mouseup', stopResizing);
-    // };
 
     const getCurrentLogs = () => {
         return logType === 'install' ? installLogs : serverLogs;
@@ -980,80 +928,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                         )}
                     </button>
                 </div>
-
-                {/* {showSettingsPanel && (
-                    <div className="bg-gray-800 p-3 border-b border-gray-700 flex flex-wrap gap-4 items-center">
-                        <div className="flex items-center gap-2">
-                            <label className="text-sm text-gray-300">Theme:</label>
-                            <select
-                                value={editorTheme}
-                                onChange={(e) => setEditorTheme(e.target.value)}
-                                className="bg-gray-700 text-white rounded-md p-1 text-sm"
-                            >
-                                {editorThemes.map(theme => (
-                                    <option key={theme.id} value={theme.id}>{theme.name}</option>
-                                ))}
-                                <option value="github-dark">GitHub Dark</option>
-                            </select>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <label className="text-sm text-gray-300">Font Size:</label>
-                            <select
-                                value={fontSize}
-                                onChange={(e) => setFontSize(parseInt(e.target.value))}
-                                className="bg-gray-700 text-white rounded-md p-1 text-sm"
-                            >
-                                {fontSizeOptions.map(size => (
-                                    <option key={size} value={size}>{size}px</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <label className="text-sm text-gray-300">Word Wrap:</label>
-                            <select
-                                value={wordWrap}
-                                onChange={(e) => setWordWrap(e.target.value as 'on' | 'off')}
-                                className="bg-gray-700 text-white rounded-md p-1 text-sm"
-                            >
-                                <option value="on">On</option>
-                                <option value="off">Off</option>
-                            </select>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <label className="text-sm text-gray-300">Minimap:</label>
-                            <input
-                                type="checkbox"
-                                checked={showMinimap}
-                                onChange={(e) => setShowMinimap(e.target.checked)}
-                                className="rounded-md"
-                            />
-                        </div>
-
-                        <div className="border-l border-gray-600 pl-4 flex gap-2">
-                            <button
-                                onClick={handleFormatDocument}
-                                className="bg-gray-700 text-gray-200 hover:bg-gray-600 px-2 py-1 rounded-md text-sm flex items-center gap-1"
-                            >
-                                <span>🧹</span> Format
-                            </button>
-                            <button
-                                onClick={handleToggleComment}
-                                className="bg-gray-700 text-gray-200 hover:bg-gray-600 px-2 py-1 rounded-md text-sm flex items-center gap-1"
-                            >
-                                <span>💬</span> Comment
-                            </button>
-                            <button
-                                onClick={handleFindReplace}
-                                className="bg-gray-700 text-gray-200 hover:bg-gray-600 px-2 py-1 rounded-md text-sm flex items-center gap-1"
-                            >
-                                <span>🔍</span> Find
-                            </button>
-                        </div>
-                    </div>
-                )} */}
             </div>
             <div className="flex items-center bg-gray-800 p-2 shadow-md z-10">
 

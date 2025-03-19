@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import axios from '../config/axios';
@@ -13,42 +13,57 @@ interface User {
     name: string;
 }
 
+interface LocationState {
+    redirectTo?: string;
+}
+
 const Login = () => {
-    // const { setUser } = useContext<UserContextProps>(UserContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const dispatch = useDispatch<AppDispatch>()
+    const location = useLocation();
+    const dispatch = useDispatch<AppDispatch>();
+    const state = location.state as LocationState;
 
     useEffect(() => {
         if (localStorage.getItem('token')) {
-            navigate('/home')
-        }
-    }, [])
-
-    const handleSubmit = (e: React.FormEvent) => {
-
-        e.preventDefault();
-        console.log('Login:', { email, password });
-
-        axios.post<{ user: User; token: string }>('/users/login', { email, password })
-            .then((res) => {
-                const { token } = res.data;
-
-                console.log('API Response:', res.data);
-
-                localStorage.setItem('token', token);
-                console.log(localStorage.getItem('token'))
-                dispatch(validateToken());
-
-                // setUser(user);
-
+            // Check if there's a pending join token in session storage
+            const pendingJoinToken = sessionStorage.getItem('pendingJoinToken');
+            if (pendingJoinToken) {
+                navigate(`/join/${pendingJoinToken}`);
+                sessionStorage.removeItem('pendingJoinToken');
+            } else {
                 navigate('/home');
-            })
-            .catch((err) => {
-                console.error('Login Error:', err.response?.data || err.message);
-            });
+            }
+        }
+    }, [navigate]);
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+
+        try {
+            const res = await axios.post<{ user: User; token: string }>('/users/login', { email, password });
+            const { token } = res.data;
+
+            localStorage.setItem('token', token);
+            await dispatch(validateToken());
+
+            // Check if there's a pending join token in session storage
+            const pendingJoinToken = sessionStorage.getItem('pendingJoinToken');
+            if (pendingJoinToken) {
+                navigate(`/join/${pendingJoinToken}`);
+                sessionStorage.removeItem('pendingJoinToken');
+            } else if (state?.redirectTo) {
+                navigate(state.redirectTo);
+            } else {
+                navigate('/home');
+            }
+        } catch (err: any) {
+            console.error('Login Error:', err.response?.data || err.message);
+            setError(err.response?.data?.message || 'Failed to login. Please check your credentials.');
+        }
     };
 
     return (
@@ -60,9 +75,23 @@ const Login = () => {
                     </div>
                     <h2 className="mt-6 text-3xl font-bold text-white">Welcome back</h2>
                     <p className="mt-2 text-sm text-gray-400">Sign in to your account</p>
+
+                    {state?.redirectTo?.includes('/join/') && (
+                        <div className="mt-4 p-3 bg-indigo-900 rounded-md">
+                            <p className="text-sm text-indigo-200">
+                                Please log in to join the collaborative project
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="p-3 bg-red-900 rounded-md text-red-200 text-sm">
+                            {error}
+                        </div>
+                    )}
+
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-300" htmlFor="email">

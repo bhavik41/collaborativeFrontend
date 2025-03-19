@@ -145,6 +145,7 @@ const Explorer: React.FC<ExplorerProps> = ({
 
     useEffect(() => {
         receiveMessage("fileTree-update", (data: any) => {
+            console.log(data)
             setFileTree(data);
         });
     }, [setFileTree]);

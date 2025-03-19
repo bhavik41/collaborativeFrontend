@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "../config/axios";
+import axios from "axios";
 import { initializeSocket, receiveMessage } from "../config/socket";
 import { useSelector } from "react-redux";
 import { RootState } from "../App/store";
 import SlidePanel from "../component/SlidePanel";
 import MessageArea from "../component/MessageArea";
 import CollaboratorModal from "../component/CollaboratorModal";
-
+import ShareLinkModal from "../component/ShareLinkModal";
 import CodeEditor from "../component/Monaco";
 import { WebContainer } from "@webcontainer/api";
 import { getWebContainer } from "../config/wbContainer";
 import Explorer from "../component/Explorer";
-
-
+import { Link, UserPlus, Users } from "lucide-react";
 
 interface User {
     id: string;
@@ -25,18 +24,17 @@ interface Project {
     name: string;
     creator: string;
     language: string;
-    descriptionn?: string
+    description?: string
     users: User[];
     fileTree: FileTree
     version: number;
 }
 
-
-
 interface Message {
     sender: string;
     message: string;
 }
+
 interface FileContent {
     file: {
         contents: string;
@@ -56,14 +54,13 @@ interface FileTree {
     [key: string]: FileNode;
 }
 
-
 const Project = () => {
     const location = useLocation();
     const [isSlidePanelOpen, setIsSlidePanelOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [collaborators, setCollaborators] = useState<User[]>([]);
     const project = location.state.project;
-    // const [project, setProject] = useState<Project>(location.state.project);
     const [allUsers, setAllUsers] = useState<User[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const { user } = useSelector((state: RootState) => state.auth);
@@ -71,10 +68,9 @@ const Project = () => {
     const [currentFile, setCurrentFile] = useState<string | null>(null)
     const [openFiles, setOpenFiles] = useState<string[]>([])
     const [webContainer, setWebContainer] = useState<WebContainer | null>(null)
-    // const [iframeUrl, setIframeUrl] = useState<string | null>(null);
-    // const [runProcess, setRunProcess] = useState<WebContainerProcess | null>(null);
 
     useEffect(() => {
+        console.log("project", project)
         if (!webContainer) {
             getWebContainer().then((container) => {
                 setWebContainer(container);
@@ -104,9 +100,13 @@ const Project = () => {
                         setFileTree(message.fileTree)
 
                         try {
-                            const response = await axios.put('/project/update-file-tree', {
+                            const response = await axios.put(`${import.meta.env.VITE_API_URL}/project/update-file-tree`, {
                                 projectId: project.id,
                                 fileTree: message.fileTree,
+                            }, {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                                },
                             });
                             console.log('rsponse', response.data);
                         } catch (err) {
@@ -121,32 +121,40 @@ const Project = () => {
             }
         });
 
-
-
         axios
-            .get<{ project: Project }>(`/project/get-project/${location.state.project.id}`)
+            .get<{ project: Project }>(`${import.meta.env.VITE_API_URL}/project/get-project/${location.state.project.id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            })
             .then(
                 (res) => {
                     console.log(project)
                     setCollaborators(res.data.project.users);
-
                     setFileTree(res.data.project.fileTree)
                 }
-
             )
             .catch((err) => console.error("Error fetching project data:", err));
 
         axios
-            .get<User[]>("/users/all")
+            .get<User[]>(`${import.meta.env.VITE_API_URL}/users/all`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            })
             .then((res) => setAllUsers(res.data))
             .catch((err) => console.error("Error fetching users:", err));
     }, []);
 
     const handleAddCollaborators = async (selectedUsers: string[]) => {
         try {
-            await axios.put('/project/add-user', {
+            await axios.put(`${import.meta.env.VITE_API_URL}/project/add-user`, {
                 projectId: project.id,
                 users: selectedUsers,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
             });
 
             // Update collaborators list
@@ -161,18 +169,31 @@ const Project = () => {
         }
     };
 
-
-
     return (
-        <main className=" w-screen h-screen flex">
+        <main className="w-screen h-screen flex">
             <section className="left relative flex flex-col h-full min-w-96 bg-slate-300">
                 <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100">
-                    <button className="flex gap-2" onClick={() => setIsModalOpen(true)}>
-                        <i className="ri-add-large-fill"></i>
-                        Add Collaborator
-                    </button>
-                    <button onClick={() => setIsSlidePanelOpen(!isSlidePanelOpen)} className="p-2">
-                        <i className="ri-group-fill"></i>
+                    <div className="flex gap-2">
+                        <button
+                            className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors text-blue-700"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <UserPlus size={16} />
+                            <span className="text-sm">Add Collaborator</span>
+                        </button>
+                        <button
+                            className="flex items-center gap-1 px-3 py-1.5 bg-green-50 rounded-lg hover:bg-green-100 transition-colors text-green-700"
+                            onClick={() => setIsShareModalOpen(true)}
+                        >
+                            <Link size={16} />
+                            <span className="text-sm">Share Link</span>
+                        </button>
+                    </div>
+                    <button
+                        onClick={() => setIsSlidePanelOpen(!isSlidePanelOpen)}
+                        className="p-2 bg-slate-200 rounded-full hover:bg-slate-300 transition-colors"
+                    >
+                        <Users size={18} className="text-slate-700" />
                     </button>
                 </header>
 
@@ -207,31 +228,27 @@ const Project = () => {
                     setOpenFiles={setOpenFiles}
                     webContainer={webContainer}
                     project={project}
-
                 />
-
-
-
-
-
-
             </section>
 
-            {
-                isModalOpen && (
-                    <CollaboratorModal
-                        collaborators={collaborators}
-                        allUsers={allUsers}
-                        onClose={() => setIsModalOpen(false)}
-                        handleAddCollaborators={handleAddCollaborators}
-                    />
-                )
-            }
-        </main >
+            {isModalOpen && (
+                <CollaboratorModal
+                    collaborators={collaborators}
+                    allUsers={allUsers}
+                    onClose={() => setIsModalOpen(false)}
+                    handleAddCollaborators={handleAddCollaborators}
+                />
+            )}
+
+            {isShareModalOpen && (
+
+                <ShareLinkModal
+                    projectId={project.id}
+                    onClose={() => setIsShareModalOpen(false)}
+                />
+            )}
+        </main>
     );
 };
 
 export default Project;
-
-
-

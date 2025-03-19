@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, PencilLine, Globe, Code, ChevronDown, ChevronUp, Info } from 'lucide-react';
-import axios from '../config/axios';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../App/store';
@@ -43,7 +43,11 @@ const Home = () => {
 
     const fetchProjects = () => {
         setIsLoading(true);
-        axios.get<{ Projects: Project[] }>('/project/all')
+        axios.get<{ Projects: Project[] }>(`${import.meta.env.VITE_API_URL}/project/all`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        })
             .then((res) => {
                 setProjects(res.data.Projects);
                 setIsLoading(false);
@@ -87,10 +91,15 @@ const Home = () => {
         e.preventDefault();
 
         try {
-            const res = await axios.post<{ newProject: Project }>('/project/create', {
+            const res = await axios.post<{ newProject: Project }>(`${import.meta.env.VITE_API_URL}/project/create`, {
                 name: projectName,
                 language: selectedLanguage,
                 description: description,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }
             });
 
             // Add the user as the creator for the new project
@@ -118,8 +127,12 @@ const Home = () => {
         if (!renameProjectId) return;
 
         try {
-            const res = await axios.patch<{ project: Project }>(`/project/rename/${renameProjectId}`, {
+            const res = await axios.patch<{ project: Project }>(`${import.meta.env.VITE_API_URL}/project/rename/${renameProjectId}`, {
                 name: projectName,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
             });
 
             setProjects((prevProjects) =>
@@ -141,7 +154,11 @@ const Home = () => {
         setDeleteLoading(projectToDelete.id);
 
         try {
-            await axios.delete<{ project: Project }>(`/project/delete/${projectToDelete.id}`);
+            await axios.delete<{ project: Project }>(`${import.meta.env.VITE_API_URL}/project/delete/${projectToDelete.id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
             setProjects((prevProjects) =>
                 prevProjects ? prevProjects.filter((project) => project.id !== projectToDelete.id) : null
             );

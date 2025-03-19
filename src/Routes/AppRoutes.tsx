@@ -6,6 +6,7 @@ import Project from '../Pages/Project'
 import UserAuth from '../auth/UserAuth'
 import Layout from '../component/Layout'
 import ProjectDashboard from '../Pages/dashboard'
+import JoinProject from '../component/JoinProject'
 
 
 const AppRoutes = () => {
@@ -16,6 +17,8 @@ const AppRoutes = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
+
+                    <Route path="/join/:token" element={<JoinProject />} />
                     <Route element={<UserAuth />}>
                         <Route element={<Layout />}>
                             <Route path="/home" element={<Home />} />
