@@ -549,6 +549,7 @@ const Explorer: React.FC<ExplorerProps> = ({
         if (parentPath) {
             expandFolder(parentPath);
         }
+
     };
 
     const handleNewItemSubmit = (e: React.KeyboardEvent | React.FocusEvent) => {

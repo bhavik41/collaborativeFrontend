@@ -890,7 +890,7 @@ const Home = () => {
                             )}
 
                             {/* Open Project button with different states */}
-                            {isScheduled || isExpired || !isAdmin ? (
+                            {(isScheduled || isExpired) && !isAdmin ? (
                               <button
                                 className="bg-purple-100 text-purple-700 shadow-md transition-all duration-300 px-4 py-2 rounded-lg ml-auto flex items-center gap-2"
                                 disabled={true}

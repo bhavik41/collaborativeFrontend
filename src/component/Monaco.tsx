@@ -573,6 +573,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [showMinimap, setShowMinimap] = useState<boolean>(true);
   const [showSettingsPanel, setShowSettingsPanel] = useState<boolean>(false);
 
+
+
   // Auto save timeout
   const autoSaveTimeoutRef = useRef<number | null>(null);
 
@@ -601,6 +603,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       }
     };
   }, [activeTab, currentFile]);
+
+
 
   // Function to handle editor mounting
   const handleEditorDidMount = (editor: any, monaco: any) => {
@@ -1432,6 +1436,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 height="100%"
                 defaultLanguage={getFileLanguage(currentFile)}
                 defaultValue={getCurrentFileContents()}
+                value={getCurrentFileContents()}
                 theme={editorTheme}
                 onChange={handleInput}
                 onMount={handleEditorDidMount}

@@ -47,7 +47,7 @@ const Login = () => {
         try {
             const res = await axios.post<{ user: User; token: string }>(`${import.meta.env.VITE_API_URL}/users/login`, { email, password });
             const { token } = res.data;
-            handleSuccess("Signup Successfull");
+            handleSuccess("SignIn Successfull");
 
             localStorage.setItem('token', token);
             await dispatch(validateToken());
