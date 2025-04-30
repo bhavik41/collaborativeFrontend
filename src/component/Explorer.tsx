@@ -235,26 +235,61 @@ const Explorer: React.FC<ExplorerProps> = ({
             setFileTree(data);
         });
 
+        // receiveMessage(
+        //     "file-renamed",
+        //     (data: { oldPath: string; newPath: string; username: string }) => {
+        //         const updatedTree = updateNodeAtPath(
+        //             fileTree,
+        //             data.oldPath,
+        //             null,
+        //             "update"
+        //         );
+        //         const node = getNodeAtPath(data.oldPath);
+        //         if (node) {
+        //             updateNodeAtPath(updatedTree, data.newPath, node, "update");
+        //             setFileTree(updatedTree);
+        //             const itemType = isDirectory(node) ? "folder" : "file";
+        //             handleSuccess(
+        //                 `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+        //                 } renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username
+        //                 }.`
+        //             );
+        //         }
+        //     }
+        // );
         receiveMessage(
             "file-renamed",
             (data: { oldPath: string; newPath: string; username: string }) => {
-                const updatedTree = updateNodeAtPath(
-                    fileTree,
-                    data.oldPath,
-                    null,
-                    "update"
+                // Don't try to get the oldPath node as it may have already been deleted on receiver side
+                // Instead, create a safe copy of the tree and add the new path
+                const updatedTree = JSON.parse(JSON.stringify(fileTree));
+
+                // Extract filename and determine if it's likely a directory by checking name (no extension)
+                const parts = data.newPath.split('/');
+                const filename = parts[parts.length - 1];
+                const hasExtension = filename.includes('.');
+
+                // Create placeholder node (this will be replaced by actual content via socket updates)
+                const placeholderNode = hasExtension
+                    ? { file: { contents: "", language: "plaintext" } }
+                    : { directory: {} };
+
+                // Add new node at the new path
+                const finalTree = updateNodeAtPath(
+                    updatedTree,
+                    data.newPath,
+                    placeholderNode,
+                    "create"
                 );
-                const node = getNodeAtPath(data.oldPath);
-                if (node) {
-                    updateNodeAtPath(updatedTree, data.newPath, node, "update");
-                    setFileTree(updatedTree);
-                    const itemType = isDirectory(node) ? "folder" : "file";
-                    handleSuccess(
-                        `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-                        } renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username
-                        }.`
-                    );
-                }
+
+                // setFileTree(finalTree);
+
+                // Use the determined type for notification
+                const itemType = hasExtension ? "file" : "folder";
+
+                handleSuccess(
+                    `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username}.`
+                );
             }
         );
 
