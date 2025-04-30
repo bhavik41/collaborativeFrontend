@@ -287,8 +287,12 @@ const Explorer: React.FC<ExplorerProps> = ({
                 // Use the determined type for notification
                 const itemType = hasExtension ? "file" : "folder";
 
+                // handleSuccess(
+                //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username}.`
+                // );
                 handleSuccess(
-                    `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username}.`
+                    `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username}.`,
+                    "file-renamed" // Add unique ID for this operation type
                 );
             }
         );
@@ -313,7 +317,8 @@ const Explorer: React.FC<ExplorerProps> = ({
                 setFileTree(updatedTree);
                 handleSuccess(
                     `${data.type.charAt(0).toUpperCase() + data.type.slice(1)
-                    } created at "${data.path}" by ${data.username}.`
+                    } created at "${data.path}" by ${data.username}.`,
+                    "file-created" // Add unique ID for this operation type
                 );
             }
         );
@@ -330,9 +335,14 @@ const Explorer: React.FC<ExplorerProps> = ({
                 setFileTree(updatedTree);
                 const node = getNodeAtPath(data.path);
                 const itemType = node && isDirectory(node) ? "folder" : "file";
+                // handleSuccess(
+                //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+                //     } deleted at "${data.path}" by ${data.username}.`
+                // );
                 handleSuccess(
                     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-                    } deleted at "${data.path}" by ${data.username}.`
+                    } deleted at "${data.path}" by ${data.username}.`,
+                    "file-deleted" // Add unique ID for this operation type
                 );
             }
         );
@@ -348,14 +358,22 @@ const Explorer: React.FC<ExplorerProps> = ({
 
                 if (importedItems.length > 2) {
 
+                    // handleSuccess(
+                    //     `${importedItems[0].name} (${importedItems[0].type}) imported by ${data.username}.`
+                    // );
                     handleSuccess(
-                        `${importedItems[0].name} (${importedItems[0].type}) imported by ${data.username}.`
+                        `${importedItems[0].name} (${importedItems[0].type}) imported by ${data.username}.`,
+                        "files-imported" // Add unique ID for this operation type
                     );
                 } else {
                     const itemNames = importedItems
                         .map((item) => `${item.name} (${item.type})`)
                         .join(", ");
-                    handleSuccess(`${itemNames} imported by ${data.username}.`);
+                    // handleSuccess(`${itemNames} imported by ${data.username}.`);
+                    handleSuccess(
+                        `${itemNames} imported by ${data.username}.`,
+                        "files-imported" // Add unique ID for this operation type
+                    );
                 }
             }
         );

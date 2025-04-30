@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-export function handleSuccess(msg: string) {
+export function handleSuccess(msg: string, id?: string) {
     toast.success(msg, {
         position: "top-right",
         autoClose: 5000,
@@ -10,10 +10,11 @@ export function handleSuccess(msg: string) {
         draggable: true,
         progress: undefined,
         theme: "dark",
+        toastId: id || "success-notification",
     });
 }
 
-export function handleError(msg: string) {
+export function handleError(msg: string, id?: string) {
     toast.error(msg, {
         position: "top-right",
         autoClose: 5000,
@@ -23,5 +24,6 @@ export function handleError(msg: string) {
         draggable: true,
         progress: undefined,
         theme: "dark",
+        toastId: id || "error-notification",
     });
 }
