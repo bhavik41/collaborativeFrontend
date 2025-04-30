@@ -248,7 +248,7 @@ const Explorer: React.FC<ExplorerProps> = ({
                 if (node) {
                     updateNodeAtPath(updatedTree, data.newPath, node, "create");
                     setFileTree(updatedTree);
-                    const itemType = isDirectory(node) ? "folder" : "file";
+                    // const itemType = isDirectory(node) ? "folder" : "file";
                     // handleSuccess(
                     //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
                     //     } renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username
@@ -293,8 +293,8 @@ const Explorer: React.FC<ExplorerProps> = ({
                     "delete"
                 );
                 setFileTree(updatedTree);
-                const node = getNodeAtPath(data.path);
-                const itemType = node && isDirectory(node) ? "folder" : "file";
+                // const node = getNodeAtPath(data.path);
+                // const _itemType = node && isDirectory(node) ? "folder" : "file";
                 // handleSuccess(
                 //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
                 //     } deleted at "${data.path}" by ${data.username}.`
@@ -317,9 +317,9 @@ const Explorer: React.FC<ExplorerProps> = ({
                     //     `${importedItems[0].name} (${importedItems[0].type}) imported by ${data.username}.`
                     // );
                 } else {
-                    const itemNames = importedItems
-                        .map((item) => `${item.name} (${item.type})`)
-                        .join(", ");
+                    // const itemNames = importedItems
+                    //     .map((item) => `${item.name} (${item.type})`)
+                    //     .join(", ");
                     // handleSuccess(`${itemNames} imported by ${data.username}.`);
                 }
             }
