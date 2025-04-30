@@ -246,7 +246,7 @@ const Explorer: React.FC<ExplorerProps> = ({
                 );
                 const node = getNodeAtPath(data.oldPath);
                 if (node) {
-                    updateNodeAtPath(updatedTree, data.newPath, node, "create");
+                    updateNodeAtPath(updatedTree, data.newPath, node, "update");
                     setFileTree(updatedTree);
                     // const itemType = isDirectory(node) ? "folder" : "file";
                     // handleSuccess(
