@@ -299,7 +299,6 @@ const MessageArea: React.FC<MessageAreaProps> = ({
         style={{
           backgroundImage: `url(${whatsappBg})`,
           backgroundSize: "contain",
-          backgroundColor: "#e5ddd5",
         }}
       >
         {Object.entries(messageGroups).map(([date, msgs]) => (
@@ -327,8 +326,8 @@ const MessageArea: React.FC<MessageAreaProps> = ({
                 >
                   <div
                     className={`message relative max-w-72 rounded-lg p-2 px-3 shadow ${isCurrentUser
-                        ? "bg-emerald-100 text-gray-800 rounded-tr-none"
-                        : "bg-white text-gray-800 rounded-tl-none"
+                      ? "bg-emerald-100 text-gray-800 rounded-tr-none"
+                      : "bg-white text-gray-800 rounded-tl-none"
                       } ${isHighlighted ? "ring-2 ring-yellow-500" : ""}`}
                   >
                     {/* Sender email */}
