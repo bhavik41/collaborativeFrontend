@@ -1,33 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { UserPlus, Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../config/axios'
+import axios from 'axios';
 
-const Signup = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const Navigate = useNavigate();
+import { handleError, handleSuccess } from '../config/toastUtility';
 
-    const handleSubmit = (e: React.FormEvent) => {
+
+const Signup: React.FC = () => {
+    const [name, setName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const navigate = useNavigate();
+
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
-        console.log('Register:', { name, email, password, });
-
-        axios.post('/users/register', {
+        console.log('Register:', { name, email, password });
+        axios.post(`${import.meta.env.VITE_API_URL}/users/register`, {
             name, email, password
         }).then((res) => {
             console.log(res.data);
-            Navigate('/login');
+            handleSuccess("Signup Successfull");
+            navigate('/login');
         }).catch((err) => {
-            console.log(err.response.data)
-        })
-
+            handleError(err.response.data.errors[0].msg);
+        });
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
             <div className="max-w-md w-full space-y-8 bg-gray-800 p-8 rounded-xl shadow-2xl">
                 <div className="text-center">
                     <div className="flex justify-center">

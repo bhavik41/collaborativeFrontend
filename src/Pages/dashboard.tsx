@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UserRound, Trash2, FolderGit2, Search, Plus, X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '../component/ui/card';
 import { Button } from '../component/ui/Button';
-import { Input } from '../component/ui/Inout';
+import { Input } from '../component/ui/Input';
 import { Alert, AlertDescription } from '../component/alert';
 
 

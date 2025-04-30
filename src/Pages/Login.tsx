@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { LogIn, Mail, Lock } from 'lucide-react';
-import axios from '../config/axios';
+import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../App/store';
 import { validateToken } from '../redux/auth.slice';
+import { handleError, handleSuccess } from '../config/toastUtility';
 
 interface User {
     id: string;
@@ -44,8 +45,9 @@ const Login = () => {
         setError(null);
 
         try {
-            const res = await axios.post<{ user: User; token: string }>('/users/login', { email, password });
+            const res = await axios.post<{ user: User; token: string }>(`${import.meta.env.VITE_API_URL}/users/login`, { email, password });
             const { token } = res.data;
+            handleSuccess("Signup Successfull");
 
             localStorage.setItem('token', token);
             await dispatch(validateToken());
@@ -62,12 +64,12 @@ const Login = () => {
             }
         } catch (err: any) {
             console.error('Login Error:', err.response?.data || err.message);
-            setError(err.response?.data?.message || 'Failed to login. Please check your credentials.');
+            handleError(err.response?.data?.message || err.response.data.errors[0].msg);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
             <div className="max-w-md w-full space-y-8 bg-gray-800 p-8 rounded-xl shadow-2xl">
                 <div className="text-center">
                     <div className="flex justify-center">

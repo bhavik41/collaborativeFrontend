@@ -14,9 +14,11 @@ const AppRoutes = () => {
         <>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
+                    <Route element={<Layout />}>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/signup" element={<Signup />} />
+                        <Route path="/" element={<Login />} />
+                    </Route>
 
                     <Route path="/join/:token" element={<JoinProject />} />
                     <Route element={<UserAuth />}>
