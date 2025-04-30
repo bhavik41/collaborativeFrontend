@@ -703,7 +703,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       setFileTree(updatedTree);
       saveFileTree(updatedTree);
       sendMessage("project-code", updatedTree);
-    }, 700);
+    }, 0);
   };
 
   const getCurrentFileContents = (): string => {
