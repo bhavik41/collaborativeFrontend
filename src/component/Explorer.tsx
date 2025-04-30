@@ -242,7 +242,7 @@ const Explorer: React.FC<ExplorerProps> = ({
                     fileTree,
                     data.oldPath,
                     null,
-                    "delete"
+                    "update"
                 );
                 const node = getNodeAtPath(data.oldPath);
                 if (node) {

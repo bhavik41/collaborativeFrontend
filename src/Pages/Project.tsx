@@ -204,40 +204,40 @@ const Project = () => {
       }
     });
 
-    receiveMessage(
-      "file-renamed",
-      (data: { oldPath: string; newPath: string; username: string }) => {
-        const updatedTree = updateNodeAtPath(
-          fileTree,
-          data.oldPath,
-          null,
-          "update"
-        );
-        const node = getNodeAtPath(data.oldPath);
-        if (node) {
-          updateNodeAtPath(updatedTree, data.newPath, node, "create");
-          setFileTree(updatedTree);
-          const itemType = isDirectory(node) ? "folder" : "file";
-          handleSuccess(
-            `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-            } renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username
-            }.`
-          );
+    // receiveMessage(
+    //   "file-renamed",
+    //   (data: { oldPath: string; newPath: string; username: string }) => {
+    //     const updatedTree = updateNodeAtPath(
+    //       fileTree,
+    //       data.oldPath,
+    //       null,
+    //       "update"
+    //     );
+    //     const node = getNodeAtPath(data.oldPath);
+    //     if (node) {
+    //       updateNodeAtPath(updatedTree, data.newPath, node, "create");
+    //       setFileTree(updatedTree);
+    //       const itemType = isDirectory(node) ? "folder" : "file";
+    //       handleSuccess(
+    //         `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+    //         } renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username
+    //         }.`
+    //       );
 
-          // Update currentFile if it matches the oldPath
-          if (currentFile === data.oldPath) {
-            setCurrentFile(data.newPath);
-          }
+    //       // Update currentFile if it matches the oldPath
+    //       if (currentFile === data.oldPath) {
+    //         setCurrentFile(data.newPath);
+    //       }
 
-          // Update openFiles if it contains the oldPath
-          setOpenFiles(
-            openFiles.map((file) =>
-              file === data.oldPath ? data.newPath : file
-            )
-          );
-        }
-      }
-    );
+    //       // Update openFiles if it contains the oldPath
+    //       setOpenFiles(
+    //         openFiles.map((file) =>
+    //           file === data.oldPath ? data.newPath : file
+    //         )
+    //       );
+    //     }
+    //   }
+    // );
 
     receiveMessage(
       "file-created",
