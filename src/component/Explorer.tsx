@@ -262,7 +262,7 @@ const Explorer: React.FC<ExplorerProps> = ({
             (data: { oldPath: string; newPath: string; username: string }) => {
                 // Don't try to get the oldPath node as it may have already been deleted on receiver side
                 // Instead, create a safe copy of the tree and add the new path
-                const updatedTree = JSON.parse(JSON.stringify(fileTree));
+                // const updatedTree = JSON.parse(JSON.stringify(fileTree));
 
                 // Extract filename and determine if it's likely a directory by checking name (no extension)
                 const parts = data.newPath.split('/');
@@ -270,17 +270,17 @@ const Explorer: React.FC<ExplorerProps> = ({
                 const hasExtension = filename.includes('.');
 
                 // Create placeholder node (this will be replaced by actual content via socket updates)
-                const placeholderNode = hasExtension
-                    ? { file: { contents: "", language: "plaintext" } }
-                    : { directory: {} };
+                // const placeholderNode = hasExtension
+                //     ? { file: { contents: "", language: "plaintext" } }
+                //     : { directory: {} };
 
                 // Add new node at the new path
-                const finalTree = updateNodeAtPath(
-                    updatedTree,
-                    data.newPath,
-                    placeholderNode,
-                    "create"
-                );
+                // const finalTree = updateNodeAtPath(
+                //     updatedTree,
+                //     data.newPath,
+                //     placeholderNode,
+                //     "create"
+                // );
 
                 // setFileTree(finalTree);
 
