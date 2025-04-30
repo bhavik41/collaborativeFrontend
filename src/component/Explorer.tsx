@@ -345,9 +345,9 @@ const Explorer: React.FC<ExplorerProps> = ({
             }) => {
                 console.log("Received files-imported message:", data);
                 const importedItems = data.importedItems;
-                console.log("Imported items:", importedItems);
+
                 if (importedItems.length > 2) {
-                    handleSuccess("This is a test notification.");
+
                     handleSuccess(
                         `${importedItems[0].name} (${importedItems[0].type}) imported by ${data.username}.`
                     );
@@ -666,10 +666,10 @@ const Explorer: React.FC<ExplorerProps> = ({
                 type: newItemType,
                 username: user?.email,
             });
-            handleSuccess(
-                `${newItemType.charAt(0).toUpperCase() + newItemType.slice(1)
-                } created at "${newFullPath}" by ${user?.email}.`
-            );
+            // handleSuccess(
+            //     `${newItemType.charAt(0).toUpperCase() + newItemType.slice(1)
+            //     } created at "${newFullPath}" by ${user?.email}.`
+            // );
 
             if (newItemType === "file") {
                 setCurrentFile(newFullPath);
@@ -801,11 +801,11 @@ const Explorer: React.FC<ExplorerProps> = ({
                 newPath: newFullPath,
                 username: user?.email,
             });
-            const itemType = isDirectory(node) ? "folder" : "file";
-            handleSuccess(
-                `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-                } renamed from "${oldPath}" to "${newFullPath}" by ${user?.email}.`
-            );
+            // const itemType = isDirectory(node) ? "folder" : "file";
+            // handleSuccess(
+            //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+            //     } renamed from "${oldPath}" to "${newFullPath}" by ${user?.email}.`
+            // );
         } catch (error) {
             handleError("Failed to rename item.");
             console.error("Failed to rename item:", error);
@@ -863,11 +863,11 @@ const Explorer: React.FC<ExplorerProps> = ({
             broadcastChanges(updatedTree);
 
             sendMessage("file-deleted", { path, username: user?.email });
-            const itemType = isDirectory(node) ? "folder" : "file";
-            handleSuccess(
-                `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-                } deleted at "${path}" by ${user?.email}.`
-            );
+            // const itemType = isDirectory(node) ? "folder" : "file";
+            // handleSuccess(
+            //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+            //     } deleted at "${path}" by ${user?.email}.`
+            // );
         } catch (error) {
             handleError("Failed to delete item.");
             console.error("Failed to delete item:", error);
@@ -1075,11 +1075,11 @@ const Explorer: React.FC<ExplorerProps> = ({
 
             setFileTree(updatedTree);
             broadcastChanges(updatedTree);
-            const itemType = isDirectory(node) ? "folder" : "file";
-            handleSuccess(
-                `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-                } moved from "${oldPath}" to "${newFullPath}" by ${user?.email}.`
-            );
+            // const itemType = isDirectory(node) ? "folder" : "file";
+            // handleSuccess(
+            //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+            //     } moved from "${oldPath}" to "${newFullPath}" by ${user?.email}.`
+            // );
         } catch (error) {
             handleError("Failed to move item.");
             console.error("Failed to move item:", error);
