@@ -333,8 +333,11 @@ const Explorer: React.FC<ExplorerProps> = ({
                     "delete"
                 );
                 setFileTree(updatedTree);
-                const node = getNodeAtPath(data.path);
-                const itemType = node && isDirectory(node) ? "folder" : "file";
+
+                const parts = data.path.split('/');
+                const filename = parts[parts.length - 1];
+                const hasExtension = filename.includes('.');
+                const itemType = hasExtension ? "file" : "folder";
                 // handleSuccess(
                 //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
                 //     } deleted at "${data.path}" by ${data.username}.`
