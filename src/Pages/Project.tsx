@@ -239,63 +239,63 @@ const Project = () => {
     //   }
     // );
 
-    receiveMessage(
-      "file-created",
-      (data: {
-        path: string;
-        type: "file" | "directory";
-        username: string;
-      }) => {
-        const newNode: FileNode =
-          data.type === "file"
-            ? { file: { contents: "", language: "plaintext" } }
-            : { directory: {} };
-        const updatedTree = updateNodeAtPath(
-          fileTree,
-          data.path,
-          newNode,
-          "create"
-        );
-        setFileTree(updatedTree);
-        handleSuccess(
-          `${data.type.charAt(0).toUpperCase() + data.type.slice(1)
-          } created at "${data.path}" by ${data.username}.`
-        );
+    // receiveMessage(
+    //   "file-created",
+    //   (data: {
+    //     path: string;
+    //     type: "file" | "directory";
+    //     username: string;
+    //   }) => {
+    //     const newNode: FileNode =
+    //       data.type === "file"
+    //         ? { file: { contents: "", language: "plaintext" } }
+    //         : { directory: {} };
+    //     const updatedTree = updateNodeAtPath(
+    //       fileTree,
+    //       data.path,
+    //       newNode,
+    //       "create"
+    //     );
+    //     setFileTree(updatedTree);
+    //     handleSuccess(
+    //       `${data.type.charAt(0).toUpperCase() + data.type.slice(1)
+    //       } created at "${data.path}" by ${data.username}.`
+    //     );
 
-        // Update currentFile if the new file is created
-        if (data.type === "file") {
-          setCurrentFile(data.path);
-          setOpenFiles([...openFiles, data.path]);
-        }
-      }
-    );
+    //     // Update currentFile if the new file is created
+    //     if (data.type === "file") {
+    //       setCurrentFile(data.path);
+    //       setOpenFiles([...openFiles, data.path]);
+    //     }
+    //   }
+    // );
 
-    receiveMessage(
-      "file-deleted",
-      (data: { path: string; username: string }) => {
-        const updatedTree = updateNodeAtPath(
-          fileTree,
-          data.path,
-          null,
-          "delete"
-        );
-        setFileTree(updatedTree);
-        const node = getNodeAtPath(data.path);
-        const itemType = node && isDirectory(node) ? "folder" : "file";
-        handleSuccess(
-          `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-          } deleted at "${data.path}" by ${data.username}.`
-        );
+    // receiveMessage(
+    //   "file-deleted",
+    //   (data: { path: string; username: string }) => {
+    //     const updatedTree = updateNodeAtPath(
+    //       fileTree,
+    //       data.path,
+    //       null,
+    //       "delete"
+    //     );
+    //     setFileTree(updatedTree);
+    //     const node = getNodeAtPath(data.path);
+    //     const itemType = node && isDirectory(node) ? "folder" : "file";
+    //     handleSuccess(
+    //       `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+    //       } deleted at "${data.path}" by ${data.username}.`
+    //     );
 
-        // Update currentFile if it matches the deleted path
-        if (currentFile === data.path) {
-          setCurrentFile(null);
-        }
+    //     // Update currentFile if it matches the deleted path
+    //     if (currentFile === data.path) {
+    //       setCurrentFile(null);
+    //     }
 
-        // Update openFiles if it contains the deleted path
-        setOpenFiles(openFiles.filter((file) => file !== data.path));
-      }
-    );
+    //     // Update openFiles if it contains the deleted path
+    //     setOpenFiles(openFiles.filter((file) => file !== data.path));
+    //   }
+    // );
     axios
       .get<{ project: Project; userAccess: UserAccess }>(
         `${import.meta.env.VITE_API_URL}/project/get-project/${location.state.project.id

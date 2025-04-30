@@ -248,12 +248,12 @@ const Explorer: React.FC<ExplorerProps> = ({
                 if (node) {
                     updateNodeAtPath(updatedTree, data.newPath, node, "update");
                     setFileTree(updatedTree);
-                    // const itemType = isDirectory(node) ? "folder" : "file";
-                    // handleSuccess(
-                    //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-                    //     } renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username
-                    //     }.`
-                    // );
+                    const itemType = isDirectory(node) ? "folder" : "file";
+                    handleSuccess(
+                        `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+                        } renamed from "${data.oldPath}" to "${data.newPath}" by ${data.username
+                        }.`
+                    );
                 }
             }
         );
@@ -276,10 +276,10 @@ const Explorer: React.FC<ExplorerProps> = ({
                     "create"
                 );
                 setFileTree(updatedTree);
-                // handleSuccess(
-                //     `${data.type.charAt(0).toUpperCase() + data.type.slice(1)
-                //     } created at "${data.path}" by ${data.username}.`
-                // );
+                handleSuccess(
+                    `${data.type.charAt(0).toUpperCase() + data.type.slice(1)
+                    } created at "${data.path}" by ${data.username}.`
+                );
             }
         );
 
@@ -293,12 +293,12 @@ const Explorer: React.FC<ExplorerProps> = ({
                     "delete"
                 );
                 setFileTree(updatedTree);
-                // const node = getNodeAtPath(data.path);
-                // const _itemType = node && isDirectory(node) ? "folder" : "file";
-                // handleSuccess(
-                //     `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
-                //     } deleted at "${data.path}" by ${data.username}.`
-                // );
+                const node = getNodeAtPath(data.path);
+                const itemType = node && isDirectory(node) ? "folder" : "file";
+                handleSuccess(
+                    `${itemType.charAt(0).toUpperCase() + itemType.slice(1)
+                    } deleted at "${data.path}" by ${data.username}.`
+                );
             }
         );
 
@@ -312,15 +312,15 @@ const Explorer: React.FC<ExplorerProps> = ({
                 const importedItems = data.importedItems;
                 console.log("Imported items:", importedItems);
                 if (importedItems.length > 2) {
-                    // handleSuccess("This is a test notification.");
-                    // handleSuccess(
-                    //     `${importedItems[0].name} (${importedItems[0].type}) imported by ${data.username}.`
-                    // );
+                    handleSuccess("This is a test notification.");
+                    handleSuccess(
+                        `${importedItems[0].name} (${importedItems[0].type}) imported by ${data.username}.`
+                    );
                 } else {
-                    // const itemNames = importedItems
-                    //     .map((item) => `${item.name} (${item.type})`)
-                    //     .join(", ");
-                    // handleSuccess(`${itemNames} imported by ${data.username}.`);
+                    const itemNames = importedItems
+                        .map((item) => `${item.name} (${item.type})`)
+                        .join(", ");
+                    handleSuccess(`${itemNames} imported by ${data.username}.`);
                 }
             }
         );
