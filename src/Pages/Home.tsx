@@ -122,7 +122,6 @@ const Home = () => {
         }
       )
       .then((res) => {
-        console.log(res.data.projects);
         setProjects(res.data.projects);
         setIsLoading(false);
       })
@@ -133,17 +132,8 @@ const Home = () => {
   };
 
   const languages = [
-    "C",
-    "Clojure",
-    "C#",
-    "Java",
-    "Kotlin",
-    "Objective-C",
-    "PHP",
-    "OCaml",
-    "R",
-    "Shift",
-    "Shell",
+    "JavaScript",
+    "Python",
     "Java",
     "C++",
     "Ruby",
@@ -348,7 +338,6 @@ const Home = () => {
           },
         }
       );
-      console.log(res);
 
       setProjects(
         (prevProjects) =>
@@ -461,7 +450,7 @@ const Home = () => {
   const handleLeaveProject = async (project: Project) => {
     setLeaveLoading(true);
     try {
-      const response = await axios.put<any>(
+      await axios.put<any>(
         `${import.meta.env.VITE_API_URL}/project/leave-project`,
         {
           projectId: project.id,
@@ -473,9 +462,8 @@ const Home = () => {
         }
       );
 
-      const data = response.data;
+      // Removed unused variable '_data'
 
-      console.log("Successfully left the project:", data);
       fetchProjects();
       navigate("/home");
     } catch (error) {
@@ -678,8 +666,8 @@ const Home = () => {
                 const isScheduled =
                   project.scheduledTime &&
                   new Date(project.scheduledTime) > now;
-                // const isExpired =
-                //   project.expiryTime && new Date(project.expiryTime) < now;
+                const isExpired =
+                  project.expiryTime && new Date(project.expiryTime) < now;
 
                 return (
                   <Card
@@ -719,9 +707,9 @@ const Home = () => {
                               <h2 className="text-xl font-semibold text-slate-800 truncate">
                                 {project.name}
                               </h2>
-                              {/* <p className="text-sm text-slate-500">
+                              <p className="text-sm text-slate-500">
                                 Last updated: Jun 30 2024
-                              </p> */}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -902,13 +890,13 @@ const Home = () => {
                             )}
 
                             {/* Open Project button with different states */}
-                            {isScheduled && !isAdmin ? (
+                            {isScheduled || isExpired || !isAdmin ? (
                               <button
                                 className="bg-purple-100 text-purple-700 shadow-md transition-all duration-300 px-4 py-2 rounded-lg ml-auto flex items-center gap-2"
                                 disabled={true}
                               >
                                 <IoInformationCircleOutline size={16} />
-                                Scheduled
+                                {isScheduled ? "Scheduled" : "Expired"}
                               </button>
                             ) : (
                               <button

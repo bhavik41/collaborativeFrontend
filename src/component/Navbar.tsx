@@ -25,7 +25,7 @@ const Navbar: React.FC<NavbarProps> = ({ projectName, onLogout }) => {
         {user && (
           <div className="flex justify-end items-center  gap-2">
             <div className="w-8 h-8 rounded-full bg-pink-300 flex items-center justify-center">
-              <span className="text-white font-semibold">
+              <span className="text-black font-semibold">
                 {user.email[0].toUpperCase()}
               </span>
             </div>

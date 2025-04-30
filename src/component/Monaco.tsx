@@ -107,7 +107,7 @@ const InputModal: React.FC<InputModalProps> = ({
 
   return (
     <div className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 overflow-auto h-[650px] rounded-lg shadow-lg p-6 max-w-md w-full">
+      <div className="bg-gray-800 overflow-auto min-h-[200px] max-h-[650px] rounded-lg shadow-lg p-6 max-w-md w-full">
         <h2 className="text-xl font-bold text-white mb-4">
           Program Input Required
         </h2>
@@ -257,37 +257,171 @@ const getNestedValue = (
 const detectInputFunctions = (code: string, language: string): string[] => {
   const inputPatterns: {
     [key: string]: {
-      regex: RegExp;
-      extractPrompt: (match: RegExpMatchArray) => string;
+      customParser?: (code: string) => string[];
+      regex?: RegExp;
+      extractPrompt?: (match: RegExpMatchArray) => string;
     };
   } = {
     java: {
-      regex:
-        /System\.out\.print(?:ln)?\s*\(\s*["']([^"']+)["']\s*\)|\b\w+\s*=\s*\w+\.next\w*\s*\(\s*\)/g,
-      extractPrompt: (match) => {
-        if (match[1]) return `__PROMPT__${match[1]}`;
-        return "__INPUT__";
+      customParser: (code: string) => {
+        const lines = code.split("\n");
+        const result: string[] = [];
+        let pendingPrompt: string | null = null;
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+
+          // Detect System.out.print or println with string literal
+          const promptMatch = line.match(
+            /System\.out\.print(?:ln)?\s*\(\s*["'](.+?)["']\s*\)\s*;?/
+          );
+          if (promptMatch) {
+            pendingPrompt = promptMatch[1];
+            continue;
+          }
+
+          // Detect scanner input assignment like: int x = scanner.nextInt();
+          const inputMatch = line.match(
+            /\b(\w+)\s*=\s*\w+\.next\w*\s*\(\s*\)\s*;?/
+          );
+          if (inputMatch) {
+            result.push(pendingPrompt ?? "Enter input:");
+            pendingPrompt = null; // reset prompt after use
+            continue;
+          }
+
+          // Detect inline usage like: System.out.println(scanner.nextLine());
+          const inlineInput = line.match(
+            /System\.out\.println\s*\(\s*\w+\.next\w*\s*\(\s*\)\s*\)\s*;?/
+          );
+          if (inlineInput) {
+            result.push(pendingPrompt ?? "Enter input:");
+            pendingPrompt = null;
+          }
+        }
+
+        return result;
       },
     },
     python: {
-      regex: /input\(([^)]*)\)/g,
-      extractPrompt: (match) => {
-        const promptText = match[1]?.trim().replace(/["']/g, "") || "";
-        return promptText;
+      customParser: (code: string) => {
+        const lines = code.split("\n");
+        const result: string[] = [];
+        let pendingPrompt: string | null = null;
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+
+          // Detect print() used for prompt
+          const printMatch = line.match(/^print\s*\(\s*["'](.+?)["']\s*\)\s*$/);
+          if (printMatch) {
+            pendingPrompt = printMatch[1];
+            continue;
+          }
+
+          // Detect input() with prompt
+          const inputWithPrompt = line.match(/input\s*\(\s*["'](.+?)["']\s*\)/);
+          if (inputWithPrompt) {
+            result.push(inputWithPrompt[1]);
+            pendingPrompt = null;
+            continue;
+          }
+
+          // Detect input() without prompt
+          const plainInput = line.match(/\binput\s*\(\s*\)/);
+          if (plainInput) {
+            result.push(pendingPrompt ?? "Enter input:");
+            pendingPrompt = null;
+          }
+        }
+
+        return result;
       },
     },
+
     javascript: {
-      regex: /prompt\(([^)]*)\)|readline\(\)/g,
-      extractPrompt: (match) => {
-        const promptText = match[1]?.trim().replace(/["']/g, "") || "";
-        return promptText || "Enter input:";
+      customParser: (code: string) => {
+        const lines = code.split("\n");
+        const result: string[] = [];
+        let pendingPrompt: string | null = null;
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+
+          // Check for console.log statements that might be prompts
+          const consoleLogMatch = line.match(
+            /console\.log\s*\(\s*["'](.+?)["']\s*\)/
+          );
+          if (consoleLogMatch) {
+            pendingPrompt = consoleLogMatch[1];
+            continue;
+          }
+
+          // Check for prompt() with or without message
+          const promptMatch = line.match(
+            /\w+\s*=\s*prompt\((?:["'](.+?)["'])?\)/
+          );
+          if (promptMatch) {
+            result.push(promptMatch[1] || pendingPrompt || "Enter input:");
+            pendingPrompt = null;
+            continue;
+          }
+
+          // Check for readline or other Node.js input methods
+          const readlineMatch = line.match(
+            /(?:readline|createInterface|question|rl\.question)\(|process\.stdin|\.on\(\s*['"]data['"]|readLine\(\)/
+          );
+          if (readlineMatch) {
+            result.push(pendingPrompt || "Enter input:");
+            pendingPrompt = null;
+            continue;
+          }
+        }
+
+        return result;
       },
     },
+
     typescript: {
-      regex: /prompt\(([^)]*)\)|readline\(\)/g,
-      extractPrompt: (match) => {
-        const promptText = match[1]?.trim().replace(/["']/g, "") || "";
-        return promptText || "Enter input:";
+      customParser: (code: string) => {
+        const lines = code.split("\n");
+        const result: string[] = [];
+        let pendingPrompt: string | null = null;
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+
+          // Check for console.log statements that might be prompts
+          const consoleLogMatch = line.match(
+            /console\.log\s*\(\s*["'](.+?)["']\s*\)/
+          );
+          if (consoleLogMatch) {
+            pendingPrompt = consoleLogMatch[1];
+            continue;
+          }
+
+          // Check for prompt() with or without message
+          const promptMatch = line.match(
+            /\w+\s*(?::\s*\w+)?\s*=\s*prompt\((?:["'](.+?)["'])?\)/
+          );
+          if (promptMatch) {
+            result.push(promptMatch[1] || pendingPrompt || "Enter input:");
+            pendingPrompt = null;
+            continue;
+          }
+
+          // Check for readline or other Node.js input methods
+          const readlineMatch = line.match(
+            /(?:readline|createInterface|question|rl\.question)\(|process\.stdin|\.on\(\s*['"]data['"]|readLine\(\)/
+          );
+          if (readlineMatch) {
+            result.push(pendingPrompt || "Enter input:");
+            pendingPrompt = null;
+            continue;
+          }
+        }
+
+        return result;
       },
     },
     cpp: {
@@ -321,11 +455,43 @@ const detectInputFunctions = (code: string, language: string): string[] => {
       },
     },
     go: {
-      regex:
-        /fmt\.Print(?:ln|f)?\s*\(\s*["']([^"']+)["'][^)]*\)|fmt\.Scan\w*\s*\([^)]*\)/g,
-      extractPrompt: (match) => {
-        if (match[1]) return `__PROMPT__${match[1]}`;
-        return "__INPUT__";
+      customParser: (code: string) => {
+        const lines = code.split("\n");
+        const result: string[] = [];
+        let pendingPrompt: string | null = null;
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+
+          // Detect fmt.Print with string literal
+          const promptMatch = line.match(
+            /fmt\.(Print|Printf|Println)\s*\(\s*["']([^"']+)["'].*\)/
+          );
+          if (promptMatch) {
+            pendingPrompt = promptMatch[2];
+            continue;
+          }
+
+          // Detect any fmt.Scan function
+          const scanMatch = line.match(/fmt\.(Scan|Scanf|Scanln)\s*\(/);
+          if (scanMatch) {
+            result.push(pendingPrompt ?? "Enter input:");
+            pendingPrompt = null; // reset prompt after use
+            continue;
+          }
+
+          // Detect bufio reader input methods: ReadString, ReadBytes, ReadLine, etc.
+          const bufioMatch = line.match(
+            /\w+\s*(?:,\s*\w+\s*)?:=\s*\w+\.Read\w+\(/
+          );
+          if (bufioMatch) {
+            result.push(pendingPrompt ?? "Enter input:");
+            pendingPrompt = null; // reset prompt after use
+            continue;
+          }
+        }
+
+        return result;
       },
     },
   };
@@ -335,20 +501,25 @@ const detectInputFunctions = (code: string, language: string): string[] => {
 
   if (!pattern) return [];
 
-  const matches = Array.from(code.matchAll(pattern.regex));
-  const extracted = matches.map((match) => pattern.extractPrompt(match));
+  // Use custom parser if defined (Java case)
+  if (pattern.customParser) {
+    return pattern.customParser(code);
+  }
 
-  // Process extracted matches: apply prompt only once
+  // Default regex-based extraction
+  const matches = Array.from(code.matchAll(pattern.regex!));
+  const extracted = matches.map((match) => pattern.extractPrompt!(match));
+
+  // Match prompts to inputs in sequence
   const result: string[] = [];
   let promptQueue: string[] = [];
 
   for (const item of extracted) {
     if (item.startsWith("__PROMPT__")) {
-      // Queue the prompt for the next input
       promptQueue.push(item.replace("__PROMPT__", "").trim());
     } else if (item === "__INPUT__") {
       if (promptQueue.length > 0) {
-        result.push(promptQueue.shift()!); // Use and discard prompt
+        result.push(promptQueue.shift()!);
       } else {
         result.push("Enter input:");
       }
@@ -613,7 +784,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     // Updated language IDs to match Judge0 CE API
     const languageMap: Record<string, number | null> = {
       c: 50,
-      'cpp': 54,
+      cpp: 54,
       java: 62,
       python: 71,
       javascript: 63,
@@ -814,22 +985,23 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 };
                 
                 try {
-                  ${jsCode} // Runs user-provided JavaScript
-                } catch (err) {
-                  console.error("Execution Error:", err.message);
-                  console.error(err.stack);
-                }
-                
-                parent.postMessage({ type: 'execution-complete' }, '*');
-              })();
-            </script>
-          </body>
-          </html>
-        `);
+                  ${jsCode}
+                  } catch (err) {
+                    console.error("Execution Error:", err.message);
+                    console.error(err.stack);
+                    }
+                    
+                    parent.postMessage({ type: 'execution-complete' }, '*');
+                    })();
+                    </script>
+                    </body>
+                    </html>
+                    `);
         iframeDoc.close();
       }
     }
 
+    // Runs user-provided JavaScript
     const messageHandler = (event: MessageEvent) => {
       if (event.data.type === "log") {
         const prefix =
@@ -1029,7 +1201,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-RapidAPI-Key": import.meta.env.JUDGE0_API_KEY || 'f72520e9f9msh9e7426361479b74p144c1ejsn730574d7951d',
+          "X-RapidAPI-Key": import.meta.env.VITE_JUDGEO_API_KEY,
           "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
         },
         body: JSON.stringify(submissionData),
