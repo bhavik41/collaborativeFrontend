@@ -97,66 +97,66 @@ const Project = () => {
       });
     }
 
-    const isDirectory = (node: FileNode): node is DirectoryContent => {
-      return "directory" in node;
-    };
+    // const isDirectory = (node: FileNode): node is DirectoryContent => {
+    //   return "directory" in node;
+    // };
 
-    const updateNodeAtPath = (
-      tree: FileTree,
-      path: string,
-      updatedNode: FileNode | null,
-      action: "update" | "delete" | "create"
-    ): FileTree => {
-      const newTree = JSON.parse(JSON.stringify(tree)) as FileTree;
+    // const _updateNodeAtPath = (
+    //   tree: FileTree,
+    //   path: string,
+    //   updatedNode: FileNode | null,
+    //   action: "update" | "delete" | "create"
+    // ): FileTree => {
+    //   const newTree = JSON.parse(JSON.stringify(tree)) as FileTree;
 
-      if (path === "") {
-        throw new Error("Cannot update root");
-      }
+    //   if (path === "") {
+    //     throw new Error("Cannot update root");
+    //   }
 
-      const parts = path.split("/");
-      let current: any = newTree;
+    //   const parts = path.split("/");
+    //   let current: any = newTree;
 
-      // Navigate to parent directory
-      for (let i = 0; i < parts.length - 1; i++) {
-        const part = parts[i];
-        if (!current[part] || !isDirectory(current[part])) {
-          if (action === "create") {
-            // Create parent directories if they don't exist
-            current[part] = { directory: {} };
-          } else {
-            throw new Error(`Invalid path: ${path}`);
-          }
-        }
-        current = current[part].directory;
-      }
+    //   // Navigate to parent directory
+    //   for (let i = 0; i < parts.length - 1; i++) {
+    //     const part = parts[i];
+    //     if (!current[part] || !isDirectory(current[part])) {
+    //       if (action === "create") {
+    //         // Create parent directories if they don't exist
+    //         current[part] = { directory: {} };
+    //       } else {
+    //         throw new Error(`Invalid path: ${path}`);
+    //       }
+    //     }
+    //     current = current[part].directory;
+    //   }
 
-      const fileName = parts[parts.length - 1];
+    //   const fileName = parts[parts.length - 1];
 
-      if (action === "delete") {
-        delete current[fileName];
-      } else if (action === "create" || action === "update") {
-        current[fileName] = updatedNode!;
-      }
+    //   if (action === "delete") {
+    //     delete current[fileName];
+    //   } else if (action === "create" || action === "update") {
+    //     current[fileName] = updatedNode!;
+    //   }
 
-      return newTree;
-    };
+    //   return newTree;
+    // };
 
-    const getNodeAtPath = (path: string): FileNode | null => {
-      if (path === "") return { directory: fileTree as any };
+    // const _getNodeAtPath = (path: string): FileNode | null => {
+    //   if (path === "") return { directory: fileTree as any };
 
-      const parts = path.split("/");
-      let current: any = fileTree;
+    //   const parts = path.split("/");
+    //   let current: any = fileTree;
 
-      for (let i = 0; i < parts.length; i++) {
-        if (!current[parts[i]]) return null;
-        if (i === parts.length - 1) return current[parts[i]];
-        if (!isDirectory(current[parts[i]])) {
-          return null;
-        }
-        current = current[parts[i]].directory;
-      }
-      return null;
-    };
+    //   for (let i = 0; i < parts.length; i++) {
+    //     if (!current[parts[i]]) return null;
+    //     if (i === parts.length - 1) return current[parts[i]];
+    //     if (!isDirectory(current[parts[i]])) {
+    //       return null;
+    //     }
+    //     current = current[parts[i]].directory;
+    //   }
+    //   return null;
+    // };
 
     const socketInstance = initializeSocket(project.id);
 
