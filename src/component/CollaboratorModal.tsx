@@ -435,6 +435,7 @@ interface CollaboratorModalProps {
     project: Project;
     userAccess: UserAccess;
     handleToggleAdminOnlyEdit: (projectId: string, adminOnlyEdit: boolean) => void;
+    adminOnlyEdit: boolean;
 }
 
 const CollaboratorModal: React.FC<CollaboratorModalProps> = ({
@@ -446,7 +447,8 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({
     onClose,
     project,
     userAccess,
-    handleToggleAdminOnlyEdit
+    handleToggleAdminOnlyEdit,
+    adminOnlyEdit
 }) => {
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
     const [accessLevel, setAccessLevel] = useState<string>('readonly');
@@ -459,6 +461,10 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({
     const availableUsers = allUsers.filter(
         (user) => !collaborators.some((c) => c.id === user.id)
     );
+
+    useEffect(() => {
+        console.log(adminOnlyEdit);
+    })
 
     const toggleUserExpand = (userId: string) => {
         if (expandedUser === userId) {
@@ -610,7 +616,7 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({
                         <input
                             type="checkbox"
                             id="adminOnlyEdit"
-                            checked={project.adminOnlyEdit}
+                            checked={adminOnlyEdit}
                             onChange={handleToggleAdminOnlyEditChange}
                             className="w-4 h-4"
                         />

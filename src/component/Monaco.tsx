@@ -552,7 +552,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     "editor"
   );
   const [logType, setLogType] = useState<"server" | "install">("install");
-  const containerRef = useRef<HTMLIFrameElement>(null);
+  // const containerRef = useRef<HTMLIFrameElement>(null);
   const [hasError, setHasError] = useState(false);
   const [editorKey, setEditorKey] = useState(0); // Used to force re-render the editor
   const [isExecuting, setIsExecuting] = useState(false);
@@ -703,7 +703,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       setFileTree(updatedTree);
       saveFileTree(updatedTree);
       sendMessage("project-code", updatedTree);
-    }, 0);
+    }, 700);
   };
 
   const getCurrentFileContents = (): string => {
@@ -1299,18 +1299,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             className={`px-3 py-1 rounded flex items-center ${isRunning || isExecuting
               ? "bg-red-600 hover:bg-red-700"
               : "bg-green-600 hover:bg-green-700"
-              } ${!currentFile ||
-                !userAccess.canWrite ||
-                (isExecuting && !isRunning)
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+              } 
               }`}
             onClick={isRunning ? handleStop : handleRun}
-            disabled={
-              !currentFile ||
-              !userAccess.canWrite ||
-              (isExecuting && !isRunning)
-            }
+
           >
             {isRunning ? (
               <>
@@ -1462,7 +1454,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           </div>
         )}
 
-        {activeTab === "preview" && (
+        {/* {activeTab === "preview" && (
           <div className="h-full w-full bg-gray-900 flex items-center justify-center">
             {iframeUrl ? (
               <iframe
@@ -1475,6 +1467,35 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             ) : (
               <div className="text-gray-400">
                 <p>Run your project to see the preview</p>
+              </div>
+            )}
+          </div>
+        )} */}
+
+        {activeTab === 'preview' && (
+          <div className="flex-grow h-full bg-gray-900">
+            {iframeUrl ? (<>
+
+              <div className="p-2 bg-gray-800 text-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text"
+                  onChange={(e) => setIframeUrl(e.target.value)}
+                  value={iframeUrl}
+                  className="w-full h-10 px-4 p-2 text-lg text-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <a
+                  href={iframeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-white"
+                >
+                  Open in new tab
+                </a>
+              </div>
+              <iframe src={iframeUrl} className="w-full h-full border-none bg-white" />
+            </>
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-500">
+                Run the project to see the preview
               </div>
             )}
           </div>

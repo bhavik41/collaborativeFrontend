@@ -90,6 +90,7 @@ interface ExplorerProps {
     setOpenFiles: React.Dispatch<React.SetStateAction<string[]>>;
     project: Project;
     userAccess: UserAccess;
+    adminOnlyEdit: boolean;
 }
 
 // Function to determine icon for file/folder
@@ -207,6 +208,7 @@ const Explorer: React.FC<ExplorerProps> = ({
     setOpenFiles,
     project,
     userAccess,
+    adminOnlyEdit
 }) => {
     const [editingPath, setEditingPath] = useState<string | null>(null);
     const [newItemPath, setNewItemPath] = useState<string | null>(null);
@@ -220,6 +222,9 @@ const Explorer: React.FC<ExplorerProps> = ({
     const user = useSelector((state: RootState) => state.auth.user);
 
     useEffect(() => {
+        console.log("project" + adminOnlyEdit)
+        console.log(!userAccess.canWrite || (project.adminOnlyEdit && !userAccess.isAdmin))
+        console.log(userAccess)
         if ((editingPath || newItemPath) && inputRef.current) {
             inputRef.current.focus();
             if (newItemPath) {
@@ -228,7 +233,11 @@ const Explorer: React.FC<ExplorerProps> = ({
         }
     }, [editingPath, newItemPath]);
 
-
+    // const canUserEdit = () => {
+    //     console.log(userAccess.accessLevel)
+    //     // Return false if user is in read-only mode (or not admin in admin-only mode)
+    //     return userAccess.accessLevel == "readonly";
+    // };
 
     useEffect(() => {
         receiveMessage("fileTree-update", (data: any) => {
@@ -568,7 +577,7 @@ const Explorer: React.FC<ExplorerProps> = ({
     };
 
     const createNewItem = (type: "file" | "directory") => {
-        if (project.adminOnlyEdit && !userAccess.isAdmin) return;
+        if (userAccess.accessLevel == "readonly") return;
 
         const parentPath = selectedFolder;
 
@@ -712,7 +721,7 @@ const Explorer: React.FC<ExplorerProps> = ({
         e: React.KeyboardEvent | React.FocusEvent,
         oldPath: string
     ) => {
-        if (project.adminOnlyEdit && !userAccess.isAdmin) return;
+        if (userAccess.accessLevel == "readonly") return;
 
         if (
             e.type === "keydown" &&
@@ -837,7 +846,7 @@ const Explorer: React.FC<ExplorerProps> = ({
     };
 
     const deleteItem = (path: string, e: React.MouseEvent) => {
-        if (project.adminOnlyEdit && !userAccess.isAdmin) return;
+        if (userAccess.accessLevel == "readonly") return;
 
         e.stopPropagation();
 
@@ -900,7 +909,7 @@ const Explorer: React.FC<ExplorerProps> = ({
     };
 
     const startRenaming = (path: string, e: React.MouseEvent) => {
-        if (project.adminOnlyEdit && !userAccess.isAdmin) return;
+        if (userAccess.accessLevel == "readonly") return;
 
         e.stopPropagation();
         setEditingPath(path);
@@ -1179,7 +1188,7 @@ const Explorer: React.FC<ExplorerProps> = ({
                                                 onClick={(e) => startRenaming(fullPath, e)}
                                                 className="p-1 text-slate-600 hover:bg-slate-400/50 rounded-md"
                                                 title="Rename"
-                                                disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                                                disabled={userAccess.accessLevel == "readonly"}
                                             >
                                                 ✏️
                                             </button>
@@ -1187,7 +1196,7 @@ const Explorer: React.FC<ExplorerProps> = ({
                                                 onClick={(e) => deleteItem(fullPath, e)}
                                                 className="p-1 text-slate-600 hover:bg-slate-400/50 rounded-md"
                                                 title="Delete"
-                                                disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                                                disabled={userAccess.accessLevel == "readonly"}
                                             >
                                                 ❌
                                             </button>
@@ -1254,7 +1263,8 @@ const Explorer: React.FC<ExplorerProps> = ({
                                             onClick={(e) => startRenaming(fullPath, e)}
                                             className="p-1 text-slate-600 hover:bg-slate-400/50 rounded-md"
                                             title="Rename"
-                                            disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                                            // disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                                            disabled={userAccess.accessLevel == "readonly"}
                                         >
                                             ✏️
                                         </button>
@@ -1262,7 +1272,8 @@ const Explorer: React.FC<ExplorerProps> = ({
                                             onClick={(e) => deleteItem(fullPath, e)}
                                             className="p-1 text-slate-600 hover:bg-slate-400/50 rounded-md"
                                             title="Delete"
-                                            disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                                            // disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                                            disabled={userAccess.accessLevel == "readonly"}
                                         >
                                             ❌
                                         </button>
@@ -1327,7 +1338,9 @@ const Explorer: React.FC<ExplorerProps> = ({
                         onClick={() => createNewItem("file")}
                         className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                         title={`New File in ${getFolderInfo()}`}
-                        disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                        // disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                        // disabled={!userAccess.canWrite || (adminOnlyEdit && !userAccess.isAdmin)}
+                        disabled={userAccess.accessLevel == "readonly"}
                     >
                         <FileText size={14} />
                     </button>
@@ -1335,7 +1348,9 @@ const Explorer: React.FC<ExplorerProps> = ({
                         onClick={() => createNewItem("directory")}
                         className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                         title={`New Folder in ${getFolderInfo()}`}
-                        disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                        // disabled={project.adminOnlyEdit && !userAccess.isAdmin}
+                        // disabled={!userAccess.canWrite}
+                        disabled={userAccess.accessLevel == "readonly"}
                     >
                         <Folder size={14} />
                     </button>
@@ -1358,6 +1373,7 @@ const Explorer: React.FC<ExplorerProps> = ({
                         multiple
                         style={{ display: "none" }}
                         onChange={handleImport}
+                        disabled={userAccess.canWrite}
                     />
                     {/* 
                     <label htmlFor="file" className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">

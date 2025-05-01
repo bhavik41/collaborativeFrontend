@@ -307,7 +307,7 @@ const Project = () => {
         }
       )
       .then((res) => {
-        console.log(res.data);
+        console.log('project full ' + res.data);
         setCollaborators(res.data.project.collaborators);
         setFileTree(res.data.project.fileTree);
         setUserAccess(res.data.userAccess);
@@ -452,12 +452,14 @@ const Project = () => {
           },
         }
       );
+      console.log(response.data);
 
       if (!response.data) {
         throw new Error("Failed to toggle adminOnlyEdit setting");
       }
 
       setProject(response.data.project);
+      console.log("successs", project)
 
       // Optionally, update the project state in your component
       // setProject(data.project);
@@ -518,6 +520,7 @@ const Project = () => {
           openFiles={openFiles}
           setOpenFiles={setOpenFiles}
           project={project}
+          adminOnlyEdit={project.adminOnlyEdit}
           userAccess={userAccess}
         />
         <CodeEditor
@@ -544,6 +547,7 @@ const Project = () => {
           project={project}
           userAccess={userAccess}
           handleToggleAdminOnlyEdit={handleToggleAdminOnlyEdit}
+          adminOnlyEdit={project.adminOnlyEdit}
         />
       )}
 
